@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'colorfield',
 ]
 
 MIDDLEWARE = [
@@ -141,7 +142,7 @@ AUTH_USER_MODEL = 'users.FoodgramUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated', 
+        'rest_framework.permissions.AllowAny', 
     ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [

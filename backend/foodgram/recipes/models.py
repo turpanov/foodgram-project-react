@@ -1,13 +1,16 @@
+from email.policy import default
 from django.db import models
 from django.core.validators import MinValueValidator
 
 from users.models import FoodgramUser
 
+from colorfield.fields import ColorField
+
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=200, verbose_name='Тег')
-    color = models.CharField(max_length=7, null=True, verbose_name='Цвет')
+    color = ColorField(default='#FF0000', verbose_name='Цвет')
     slug = models.CharField(max_length=200, null=True, verbose_name='Slug')
 
     class Meta:
