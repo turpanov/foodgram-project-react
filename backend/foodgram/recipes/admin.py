@@ -4,7 +4,7 @@ from .models import Recipe, Ingredient, Favorite, RecipeIngredientAmount, Shoppi
 
 
 class RecipeAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'author')
+    list_display = ('id', 'name', 'author', 'image')
     search_fields = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'
