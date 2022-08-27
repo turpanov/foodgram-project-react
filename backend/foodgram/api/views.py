@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 
-# from rest_framework.permissions import IsAdminUser
+from django_filters.rest_framework import DjangoFilterBackend
 from .paginator import FoodgramPagePagination
 from .permissions import OwnerOrAdminOrReadOnly
 from recipes.models import Tag, Ingredient, Recipe
@@ -12,7 +12,7 @@ from .serializers import (
     RecipePostSerializer
 )
 
-from .filters import IngredientFilter
+from .filters import IngredientFilter, RecipeFilter
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
@@ -31,6 +31,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all().order_by('-id')
     pagination_class = FoodgramPagePagination
     permission_classes = (OwnerOrAdminOrReadOnly,)
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':

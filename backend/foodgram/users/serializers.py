@@ -1,6 +1,7 @@
 from djoser.serializers import UserSerializer, UserCreateSerializer
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.generics import get_object_or_404
 
 from .models import Follow
 
@@ -42,3 +43,26 @@ class FoodgramUserCreateSerializer(UserCreateSerializer):
             'last_name',
             'password'
         )
+
+
+class FollowSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Follow
+        fields = ('user', 'following')
+    
+    def validate(self, data):
+        get_object_or_404(FoodgramUser, username=data['following'])
+        if self.context['request'].user == data['following']:
+            raise serializers.ValidationError('Сам на себя подписываешься!')
+        if Follow.objects.filter(
+                user=self.context['request'].user,
+                following=data['following']
+        ):
+            raise serializers.ValidationError('Уже подписан')
+        return data
+
+    # def to_representation(self, instance):
+    #     return FollowListSerializer(
+    #         instance.following,
+    #         context={'request': self.context.get('request')}
+    #     ).data
