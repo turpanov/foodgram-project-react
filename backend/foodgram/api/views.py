@@ -1,34 +1,21 @@
-from rest_framework import viewsets, status
+from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
+from recipes.models import (Favorite, Ingredient, Recipe,
+                            RecipeIngredientAmount, ShoppingCart, Tag)
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
-from django_filters.rest_framework import DjangoFilterBackend
-from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 
-from .utils import download_shopping_cart
+from .filters import IngredientFilter, RecipeFilter
 from .paginator import FoodgramPagePagination
 from .permissions import OwnerOrAdminOrReadOnly
-from recipes.models import (
-    Tag,
-    Ingredient,
-    Recipe,
-    Favorite,
-    ShoppingCart,
-    RecipeIngredientAmount
-)
-from .serializers import (
-    TagSerializer,
-    IngredientSerializer,
-    RecipeGetSerializer,
-    RecipePostSerializer,
-    FavoriteRecipeValidationSerializer,
-    FavoriteSerializer,
-    ShoppingCartSerializer,
-    ShoppingCartValidationSerializer
-
-)
-
-from .filters import IngredientFilter, RecipeFilter
+from .serializers import (FavoriteRecipeValidationSerializer,
+                          FavoriteSerializer, IngredientSerializer,
+                          RecipeGetSerializer, RecipePostSerializer,
+                          ShoppingCartSerializer,
+                          ShoppingCartValidationSerializer, TagSerializer)
+from .utils import download_shopping_cart
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

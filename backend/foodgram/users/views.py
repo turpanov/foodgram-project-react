@@ -1,3 +1,4 @@
+from api.paginator import FoodgramPagePagination
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
 from rest_framework import status
@@ -6,14 +7,9 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import (
-    FoodgramUserSerializer,
-    FollowSerializer,
-    ListFollowRecipeSerializer
-)
-from api.paginator import FoodgramPagePagination
 from .models import Follow
-
+from .serializers import (FollowSerializer, FoodgramUserSerializer,
+                          ListFollowRecipeSerializer)
 
 FoodgramUser = get_user_model()
 

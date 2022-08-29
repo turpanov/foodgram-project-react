@@ -1,4 +1,5 @@
-import csv, sqlite3
+import csv
+import sqlite3
 from winreg import QueryReflectionKey
 
 try:

@@ -1,9 +1,7 @@
-from django.db import models
-from django.core.validators import MinValueValidator
-
-from users.models import FoodgramUser
-
 from colorfield.fields import ColorField
+from django.core.validators import MinValueValidator
+from django.db import models
+from users.models import FoodgramUser
 
 
 class Tag(models.Model):
