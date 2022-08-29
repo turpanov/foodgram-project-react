@@ -89,6 +89,10 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        #  
+        #  Данные настройки подготовлены для дальнейшего перехода на PostgreSQL.
+        #  Разработка велась на SQLite
+        #
         # 'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql'),
         # 'NAME': os.getenv('DB_NAME', default='postgres'),
         # 'USER': os.getenv('POSTGRES_USER', default='postgres'),
