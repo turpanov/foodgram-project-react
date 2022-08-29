@@ -6,12 +6,13 @@ from .models import (Favorite, Ingredient, Recipe, RecipeIngredientAmount,
 
 class RecipeAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'author', 'image')
+    readonly_fields = ('added_to_favorite_count',)
     search_fields = ('name', 'author')
     list_filter = ('author', 'name', 'tags')
     empty_value_display = '-пусто-'
 
     def added_to_favorite_count(self, obj):
-        return obj.favorite.count()
+        return obj.favorited.count()
 
 
 class TagAdmin(admin.ModelAdmin):
