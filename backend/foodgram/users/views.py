@@ -1,13 +1,16 @@
 from django.contrib.auth import get_user_model
 from djoser.views import UserViewSet
-from rest_framework import viewsets, status
-from rest_framework.permissions import AllowAny
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import FoodgramUserSerializer, FollowSerializer, ListFollowRecipeSerializer
+from .serializers import (
+    FoodgramUserSerializer,
+    FollowSerializer,
+    ListFollowRecipeSerializer
+)
 from api.paginator import FoodgramPagePagination
 from .models import Follow
 
@@ -38,7 +41,7 @@ class FoodgramUserViewSet(UserViewSet):
             serializer.is_valid(raise_exception=True)
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         subscription = get_object_or_404(
                 Follow,
                 following=author,

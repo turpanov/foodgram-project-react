@@ -24,12 +24,15 @@ class FoodgramUserSerializer(UserSerializer):
             'is_subscribed'
         )
         extra_kwargs = {'password': {'write_only': True}}
-    
+
     def get_is_subscribed(self, following):
         request = self.context.get('request')
         if request is None or request.user.is_anonymous:
             return False
-        return Follow.objects.filter(user=request.user, following=following).exists()
+        return Follow.objects.filter(
+            user=request.user,
+            following=following
+        ).exists()
 
 
 class FoodgramUserCreateSerializer(UserCreateSerializer):
@@ -54,7 +57,9 @@ class FollowSerializer(serializers.ModelSerializer):
     def validate(self, data):
         get_object_or_404(FoodgramUser, username=data['following'])
         if self.context['request'].user == data['following']:
-            raise serializers.ValidationError('Нельзя подписаться на самого себя.')
+            raise serializers.ValidationError(
+                'Нельзя подписаться на самого себя.'
+            )
         if Follow.objects.filter(
                 user=self.context['request'].user,
                 following=data['following']
@@ -86,7 +91,7 @@ class ListFollowRecipeSerializer(serializers.ModelSerializer):
             'recipes',
             'recipes_count'
         )
-    
+
     def get_recipes_count(self, following):
         return Recipe.objects.filter(author=following).count()
 
@@ -108,6 +113,7 @@ class ListFollowRecipeSerializer(serializers.ModelSerializer):
             user=self.context.get('request').user,
             following=following
         ).exists()
+
 
 class FollowRecipeSerializer(serializers.ModelSerializer):
     class Meta:

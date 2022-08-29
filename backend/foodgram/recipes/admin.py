@@ -18,7 +18,7 @@ class RecipeAdmin(admin.ModelAdmin):
 
     def added_to_favorite_count(self, obj):
         return obj.favorite.count()
-    
+
 
 class TagAdmin(admin.ModelAdmin):
     list_display = ('name', 'color')

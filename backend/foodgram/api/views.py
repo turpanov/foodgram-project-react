@@ -8,11 +8,17 @@ from rest_framework.response import Response
 from .utils import download_shopping_cart
 from .paginator import FoodgramPagePagination
 from .permissions import OwnerOrAdminOrReadOnly
-from recipes.models import Tag, Ingredient, Recipe, Favorite, ShoppingCart, RecipeIngredientAmount
+from recipes.models import (
+    Tag,
+    Ingredient,
+    Recipe,
+    Favorite,
+    ShoppingCart,
+    RecipeIngredientAmount
+)
 from .serializers import (
     TagSerializer,
     IngredientSerializer,
-    RecipeIngredientAmountSerializer,
     RecipeGetSerializer,
     RecipePostSerializer,
     FavoriteRecipeValidationSerializer,
@@ -73,14 +79,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(user_id=user, recipe_id=recipe)
             serializer = FavoriteSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         favorite_recipe = Favorite.objects.filter(
             user_id=user,
             recipe_id=recipe
         )
         favorite_recipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     @action(
         detail=True,
         methods=['POST', 'DELETE'],
@@ -105,14 +111,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
             ShoppingCart.objects.create(user_id=user, recipe_id=recipe)
             serializer = ShoppingCartSerializer(recipe)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
+
         shopping_cart_recipe = ShoppingCart.objects.filter(
             user_id=user,
             recipe_id=recipe
         )
         shopping_cart_recipe.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
+
     @action(
         detail=False,
         permission_classes=(IsAuthenticated,)

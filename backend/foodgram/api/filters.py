@@ -7,6 +7,7 @@ from recipes.models import Tag, Recipe
 class IngredientFilter(SearchFilter):
     search_param = 'name'
 
+
 class RecipeFilter(FilterSet):
     tags = filters.ModelMultipleChoiceFilter(
         queryset=Tag.objects.all(),
@@ -31,7 +32,6 @@ class RecipeFilter(FilterSet):
             return queryset.filter(shopping_cart__user_id=self.request.user)
         return queryset
 
-    
     class Meta:
         model = Recipe
         fields = ('tags', 'author', 'is_favorited', 'is_in_shopping_cart')

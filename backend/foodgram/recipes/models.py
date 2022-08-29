@@ -1,11 +1,9 @@
-from email.policy import default
 from django.db import models
 from django.core.validators import MinValueValidator
 
 from users.models import FoodgramUser
 
 from colorfield.fields import ColorField
-
 
 
 class Tag(models.Model):
@@ -23,7 +21,10 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(max_length=200, verbose_name='Ингредиент')
-    measurement_unit = models.CharField(max_length=200, verbose_name='Единица измерения')
+    measurement_unit = models.CharField(
+        max_length=200,
+        verbose_name='Единица измерения'
+    )
 
     class Meta:
         verbose_name = 'Ингредиент'
@@ -45,7 +46,7 @@ class Recipe(models.Model):
         Ingredient,
         through='RecipeIngredientAmount',
         related_name='ingredients',
-        verbose_name='Ингредиенты' 
+        verbose_name='Ингредиенты'
     )
     name = models.CharField(
         max_length=200,
@@ -71,7 +72,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
-    
+
 
 class RecipeIngredientAmount(models.Model):
     recipe_id = models.ForeignKey(
@@ -85,10 +86,10 @@ class RecipeIngredientAmount(models.Model):
         verbose_name='Ингредиент'
     )
     amount = models.PositiveSmallIntegerField(
-        validators = [
+        validators=[
             MinValueValidator(
                 1,
-                message = 'Минимальное количество: 1 ед.'
+                message='Минимальное количество: 1 ед.'
             ),
         ],
         verbose_name='Количество'
@@ -134,7 +135,7 @@ class ShoppingCart(models.Model):
     user_id = models.ForeignKey(
         FoodgramUser,
         on_delete=models.CASCADE,
-        related_name = 'shopping_cart',
+        related_name='shopping_cart',
         verbose_name='Пользователь'
     )
     recipe_id = models.ForeignKey(

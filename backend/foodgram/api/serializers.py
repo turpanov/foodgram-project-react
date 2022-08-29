@@ -33,7 +33,7 @@ class RecipeIngredientAmountSerializer(serializers.ModelSerializer):
         source='ingredient_id.id',
         read_only=True
     )
-    
+
     class Meta:
         model = RecipeIngredientAmount
         fields = ('id', 'amount', 'name', 'measurement_unit')
@@ -58,7 +58,7 @@ class RecipeGetSerializer(serializers.ModelSerializer):
         model = Recipe
         fields = (
             'id',
-            'tags', 
+            'tags',
             'author',
             'ingredients',
             'is_favorited',
@@ -68,21 +68,27 @@ class RecipeGetSerializer(serializers.ModelSerializer):
             'text',
             'cooking_time'
         )
-    
+
     def get_is_favorited(self, recipe):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        is_favorited = Favorite.objects.filter(user_id=request.user, recipe_id=recipe).exists()
+        is_favorited = Favorite.objects.filter(
+            user_id=request.user,
+            recipe_id=recipe
+        ).exists()
         return is_favorited
-    
+
     def get_is_in_shopping_cart(self, recipe):
         request = self.context.get('request')
         if request.user.is_anonymous:
             return False
-        is_in_shopping_cart = ShoppingCart.objects.filter(user_id=request.user, recipe_id=recipe).exists()
+        is_in_shopping_cart = ShoppingCart.objects.filter(
+            user_id=request.user,
+            recipe_id=recipe
+        ).exists()
         return is_in_shopping_cart
-    
+
     def get_ingredients(self, recipe):
         return RecipeIngredientAmountSerializer(
             RecipeIngredientAmount.objects.filter(recipe_id=recipe),
@@ -118,12 +124,11 @@ class RecipePostSerializer(serializers.ModelSerializer):
         for ingredient in ingredients:
             if ingredient['id'] in ingredients_list:
                 raise serializers.ValidationError({
-                'ingredients': 'Ингредиенты не должны повторяться'
-            })
+                    'ingredients': 'Ингредиенты не должны повторяться'
+                })
             ingredients_list.append(ingredient['id'])
         data['ingredients'] = ingredients
         return data
-    
 
     def ingredient_tags_create(self, recipe, ingredients, tags):
         RecipeIngredientAmount.objects.bulk_create(
@@ -148,7 +153,7 @@ class RecipePostSerializer(serializers.ModelSerializer):
         )
         self.ingredient_tags_create(recipe, ingredients, tags)
         return recipe
-    
+
     def update(self, recipe, validated_data):
         recipe.name = validated_data.get('name', recipe.name)
         recipe.text = validated_data.get('text', recipe.text)
@@ -184,7 +189,7 @@ class FavoriteRecipeValidationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorite
         fields = ('user_id', 'recipe_id')
-    
+
     def validate(self, data):
         request = self.context.get('request')
         user = request.user
@@ -217,7 +222,7 @@ class ShoppingCartValidationSerializer(serializers.ModelSerializer):
     class Meta:
         model = ShoppingCart
         fields = ('user_id', 'recipe_id')
-    
+
     def validate(self, data):
         request = self.context.get('request')
         user = request.user
