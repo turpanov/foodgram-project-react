@@ -7,7 +7,7 @@ from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
-from .serializers import FoodgramUserSerializer, FollowSerializer
+from .serializers import FoodgramUserSerializer, FollowSerializer, ListFollowRecipeSerializer
 from api.paginator import FoodgramPagePagination
 from .models import Follow
 
@@ -46,3 +46,18 @@ class FoodgramUserViewSet(UserViewSet):
         )
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+    )
+    def subscriptions(self, request):
+        user = request.user
+        queryset = FoodgramUser.objects.filter(following__user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = ListFollowRecipeSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)

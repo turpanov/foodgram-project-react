@@ -1,4 +1,3 @@
-from sre_constants import SRE_INFO_CHARSET
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from recipes.models import Favorite, ShoppingCart
@@ -171,3 +170,70 @@ class RecipePostSerializer(serializers.ModelSerializer):
         context = {'request': request}
         return RecipeGetSerializer(
             instance, context=context).data
+
+
+class FavoriteSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+        read_only_fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class FavoriteRecipeValidationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favorite
+        fields = ('user_id', 'recipe_id')
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        user = request.user
+        recipe = self.context.get('recipe')
+        favorite_recipe = Favorite.objects.filter(
+            user_id=user,
+            recipe_id=recipe
+        )
+        if request.method == 'POST':
+            if favorite_recipe.exists():
+                raise serializers.ValidationError({
+                    'error': 'Рецепт уже добавлен в избранное.'
+                })
+        if request.method == 'DELETE':
+            if not favorite_recipe.exists():
+                raise serializers.ValidationError({
+                    'error': 'Рецепта нет в избранном.'
+                })
+        return data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Recipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+
+class ShoppingCartValidationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingCart
+        fields = ('user_id', 'recipe_id')
+    
+    def validate(self, data):
+        request = self.context.get('request')
+        user = request.user
+        recipe = data['recipe_id']
+        shopping_cart_recipe = ShoppingCart.objects.filter(
+            user_id=user,
+            recipe_id=recipe
+        )
+        if request.method == 'POST':
+            if shopping_cart_recipe.exists():
+                raise serializers.ValidationError({
+                    'error': 'Рецепт уже добавлен в корзину.'
+                })
+        if request.method == 'DELETE':
+            if not shopping_cart_recipe.exists():
+                raise serializers.ValidationError({
+                    'error': 'Рецепта нет в корзине.'
+                })
+        return data
