@@ -1,17 +1,19 @@
 from colorfield.fields import ColorField
 from django.core.validators import MinValueValidator
 from django.db import models
+
 from users.models import FoodgramUser
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=200, verbose_name='Тег')
+    name = models.CharField(max_length=50, verbose_name='Тег')
     color = ColorField(default='#FF0000', verbose_name='Цвет')
-    slug = models.CharField(max_length=200, null=True, verbose_name='Slug')
+    slug = models.CharField(max_length=50, null=True, verbose_name='Slug')
 
     class Meta:
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
+        ordering = ['id']
 
     def __str__(self):
         return self.name
@@ -20,13 +22,14 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     name = models.CharField(max_length=200, verbose_name='Ингредиент')
     measurement_unit = models.CharField(
-        max_length=200,
+        max_length=50,
         verbose_name='Единица измерения'
     )
 
     class Meta:
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
+        ordering = ['name']
 
     def __str__(self):
         return self.name
@@ -67,6 +70,7 @@ class Recipe(models.Model):
     class Meta:
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        ordering = ['-id']
 
     def __str__(self):
         return self.name
@@ -83,11 +87,11 @@ class RecipeIngredientAmount(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Ингредиент'
     )
-    amount = models.PositiveSmallIntegerField(
+    amount = models.FloatField(
         validators=[
             MinValueValidator(
-                1,
-                message='Минимальное количество: 1 ед.'
+                0.001,
+                message='Ингредиента не может быть 0.'
             ),
         ],
         verbose_name='Количество'
@@ -102,6 +106,10 @@ class RecipeIngredientAmount(models.Model):
                 name='unique ingredient'
             ),
         )
+
+    def __str__(self):
+        return (f'{self.ingredient_id.name} - {self.amount}'
+                f' {self.ingredient_id.measurement_unit}')
 
 
 class Favorite(models.Model):
@@ -128,6 +136,10 @@ class Favorite(models.Model):
             ),
         )
 
+    def __str__(self):
+        return (f'{self.user_id.first_name} {self.user_id.last_name} '
+                f'добавил в избранное {self.recipe_id.name}')
+
 
 class ShoppingCart(models.Model):
     user_id = models.ForeignKey(
@@ -152,3 +164,7 @@ class ShoppingCart(models.Model):
                 name='unique shopping сart'
             ),
         )
+
+    def __str__(self):
+        return (f'{self.user_id.first_name} {self.user_id.last_name} '
+                f'добавил в корзину {self.recipe_id.name}')

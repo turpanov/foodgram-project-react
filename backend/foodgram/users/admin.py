@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import Follow, FoodgramUser
 
 
+@admin.register(FoodgramUser)
 class FoodgramUserAdmin(admin.ModelAdmin):
     list_display = (
         'pk',
@@ -18,13 +19,10 @@ class FoodgramUserAdmin(admin.ModelAdmin):
     ordering = ['id']
 
 
+@admin.register(Follow)
 class FollowAdmin(admin.ModelAdmin):
     list_display = ('user', 'following')
     search_fields = ('user', 'following')
     list_filter = ('user', 'following')
     empty_value_display = '-пусто-'
     ordering = ['id']
-
-
-admin.site.register(FoodgramUser, FoodgramUserAdmin)
-admin.site.register(Follow, FollowAdmin)

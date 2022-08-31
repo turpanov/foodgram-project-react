@@ -1,7 +1,7 @@
 from django.shortcuts import get_object_or_404
+from django.contrib.auth import get_user_model
+from djoser.views import UserViewSet
 from django_filters.rest_framework import DjangoFilterBackend
-from recipes.models import (Favorite, Ingredient, Recipe,
-                            RecipeIngredientAmount, ShoppingCart, Tag)
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
@@ -10,28 +10,96 @@ from rest_framework.response import Response
 from .filters import IngredientFilter, RecipeFilter
 from .paginator import FoodgramPagePagination
 from .permissions import OwnerOrAdminOrReadOnly
-from .serializers import (FavoriteRecipeValidationSerializer,
-                          FavoriteSerializer, IngredientSerializer,
-                          RecipeGetSerializer, RecipePostSerializer,
-                          ShoppingCartSerializer,
-                          ShoppingCartValidationSerializer, TagSerializer)
+from .serializers import (
+    FoodgramUserSerializer,
+    FollowSerializer,
+    ListFollowRecipeSerializer,
+    FavoriteRecipeValidationSerializer,
+    FavoriteSerializer,
+    IngredientSerializer,
+    RecipeGetSerializer,
+    RecipePostSerializer,
+    ShoppingCartSerializer,
+    ShoppingCartValidationSerializer,
+    TagSerializer
+)
+from recipes.models import (
+    Favorite,
+    Ingredient,
+    Recipe,
+    RecipeIngredientAmount,
+    ShoppingCart,
+    Tag
+)
+from users.models import Follow
 from .utils import download_shopping_cart
 
 
+FoodgramUser = get_user_model()
+
+
+class FoodgramUserViewSet(UserViewSet):
+    queryset = FoodgramUser.objects.all()
+    serializer_class = FoodgramUserSerializer
+    pagination_class = FoodgramPagePagination
+
+    @action(
+        detail=True,
+        methods=('POST', 'DELETE'),
+        permission_classes=(IsAuthenticated,)
+    )
+    def subscribe(self, request, id):
+        author = get_object_or_404(FoodgramUser, id=id)
+        if request.method == 'POST':
+            serializer = FollowSerializer(
+                data={
+                    'user': request.user.id,
+                    'following': author.id
+                },
+                context={'request': request}
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        subscription = get_object_or_404(
+                Follow,
+                following=author,
+                user=request.user
+        )
+        subscription.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @action(
+        detail=False,
+        permission_classes=(IsAuthenticated,),
+    )
+    def subscriptions(self, request):
+        user = request.user
+        queryset = FoodgramUser.objects.filter(following__user=user)
+        pages = self.paginate_queryset(queryset)
+        serializer = ListFollowRecipeSerializer(
+            pages,
+            many=True,
+            context={'request': request}
+        )
+        return self.get_paginated_response(serializer.data)
+
+
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Ingredient.objects.all().order_by('name')
+    queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     filter_backends = (IngredientFilter,)
     search_fields = ('^name',)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Tag.objects.all().order_by('id')
+    queryset = Tag.objects.all()
     serializer_class = TagSerializer
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-    queryset = Recipe.objects.all().order_by('-id')
+    queryset = Recipe.objects.all()
     pagination_class = FoodgramPagePagination
     permission_classes = (OwnerOrAdminOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
@@ -44,7 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['POST', 'DELETE'],
+        methods=('POST', 'DELETE'),
         permission_classes=(IsAuthenticated,)
     )
     def favorite(self, request, pk):
@@ -76,7 +144,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['POST', 'DELETE'],
+        methods=('POST', 'DELETE'),
         permission_classes=(IsAuthenticated,)
     )
     def shopping_cart(self, request, pk):
