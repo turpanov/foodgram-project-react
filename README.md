@@ -50,6 +50,15 @@ sudo docker compose exec backend python manage.py createsuperuser
 ```
 Проверьте доступность проекта по адресу, указанному в конфигурации ```http://<SERVER_IP>```
 
+## Наполнение Базы Данных ингредиентов
+
+Для удобства подготовлен файл с большим количеством заготовленных ингредиентов и их меры.
+Для наполнения базы данных выполните команду
+
+```sh
+sudo docker compose exec backend python manage.py fulfill_ingredients
+```
+
 
 ------------
 
