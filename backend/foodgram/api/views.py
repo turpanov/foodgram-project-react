@@ -63,9 +63,9 @@ class FoodgramUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         subscription = get_object_or_404(
-                Follow,
-                following=author,
-                user=request.user
+            Follow,
+            following=author,
+            user=request.user
         )
         subscription.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
