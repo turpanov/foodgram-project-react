@@ -66,7 +66,7 @@ sudo docker compose exec backend python manage.py fulfill_ingredients
 sudo docker compose exec backend python manage.py loaddata data.json
 ```
 
-## Ссылки на проект
+## Ссылки на тестовый проект
 Тестовый проект размещен по адресу http://62.84.121.84
 Доступ к документации API http://62.84.121.84/api/docs/redoc.html
 Доступ к административной панели сайта http://62.84.121.84/admin
