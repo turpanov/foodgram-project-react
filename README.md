@@ -58,7 +58,13 @@ sudo docker compose exec backend python manage.py createsuperuser
 ```sh
 sudo docker compose exec backend python manage.py fulfill_ingredients
 ```
+## Наполнение Базы Данных тестовыми рецептами
 
+Для быстрого наполнения базы данных заготовленными рецептами выполните команду
+
+```sh
+sudo docker compose exec backend python manage.py loaddata data.json
+```
 
 ------------
 
