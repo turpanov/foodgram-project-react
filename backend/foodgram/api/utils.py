@@ -4,7 +4,7 @@ from django.db.models import Sum
 from django.http.response import HttpResponse
 
 
-def download_shopping_cart(recipe_ingredient):
+def download_csv_shopping_cart(recipe_ingredient):
     ingredients = recipe_ingredient.values(
         'ingredient_id__name', 'ingredient_id__measurement_unit'
     ).annotate(ingredient_amount=Sum('amount')).values_list(

@@ -32,7 +32,7 @@ from recipes.models import (
     Tag
 )
 from users.models import Follow
-from .utils import download_shopping_cart
+from .utils import download_csv_shopping_cart
 
 
 FoodgramUser = get_user_model()
@@ -182,4 +182,4 @@ class RecipeViewSet(viewsets.ModelViewSet):
         recipe_ingredient = RecipeIngredientAmount.objects.filter(
             recipe_id__shopping_cart__user_id=request.user
         )
-        return download_shopping_cart(recipe_ingredient)
+        return download_csv_shopping_cart(recipe_ingredient)
